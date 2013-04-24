@@ -7,74 +7,18 @@
 // raniellyferreira@icloud.com
 // v 1.6.5
 // ULTIMA MODIFICAÇÃO: 01/04/2013
+// More info https://github.com/raniellyferreira/sqlgenerator
 
+--Change History
+https://github.com/raniellyferreira/sqlgenerator/wiki/Change-History
 
---HISTÓRICO DE VERSÕES
-
-1.0
-- Criada, com operações basicas;
-
-1.0.1
-- Correções de erros;
-
-1.3.5
-- Adicionado opção RAND() em order_by();
-- Adicionado funções add_before(), add_after(), add_both() para adicionar parametros entre parenteses, veja nos exemplos;
-- Adicionado suporte para colunas junto com tabelas, exemplo table.colunm retorna `table`.`column`, não presente na versao anterior;
-- Parametro adicional para WHERE em update, get e delete;
-- Função where_in() adicionada;
-- Melhorado tratamento de aspas em valores;
-- Adicionado função mass_insert(), insere varias linha em uma unica query;
-- Melhorada função inner();
-- Removido bugs e algumas funções internas melhoradas;
-
-1.4.6
-- Adicionado a função between();
-- Corrigido erro na função select(), agora permite criar variaveis: coluna as variavel;
-- Erro na função select() corrigido;
-- Expansão das funções add_before() e add_after();
-- Erros corrigidos;
-
-1.5.1
-- Melhorias nas funções, agora permitindo encadeamento;
-- Erros corrigidos;
-
-1.5.2
-- Novos erros corrigidos;
-- Melhorias na adição de crases;
-- Adicionada função print_debugger(), mostra os devidos error ocorridos nas funções utilizadas;
-- Corrigido erro na função order_by();
-
-1.6.0
-- Permitido uso de funções do sql, exemplo: where('LENGTH(TRIM(tblnoticias_lang.strtitulo)) >', 0);
-- Permitido renomear tabelas, exemplo: tabela tab1;
-- Permitido array em order_by();
-- Adicionado a função last_query(), retorna a ultima sql gerada, se setar parametro para TRUE retorna todas a ultimas sql's geradas;
-- Permitido select('coluna1, coluna2','DISTINCT') ou use a função distinct();
-- Erros corrigidos;
-
-1.6.1
-- Corrigido erro na função select();
-- Adição de crases melhorada;
-
-1.6.3
-- Melhora significativa na função where_in();
-- Melhora na função between(), agora permitido NOT BETWEEN, between($column,$initial,$end,'and','not');
-- Correção de bugs, e melhoria na validação de dados da maioria das funcões;
-
-1.6.4
-- Adicionado a função having();
-
-1.6.5
-- Melhoria na função update();
-- Função update agora permite soma, update('tabela',array('count+' => 1)) ou update('tabela',array('count-' => 1));
-- Corrigido um erro na função where();
-
+--Examples
+https://github.com/raniellyferreira/sqlgenerator/wiki/Examples
 
 */
 class Sqlgen
 {
-  public $db_type 	= 'mysql'; 		// mysql only, MSSQL support in future versions.
+	public $db_type 	= 'mysql'; 		// mysql only, MSSQL support in future versions.
 	
 	private $errors 		= array();		//NÃO ALTERAR
 	private $where 			= NULL;			//NÃO ALTERAR
