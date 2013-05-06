@@ -1,12 +1,11 @@
 <?php 
-
 /*
 // CLASSE PARA GERAR SQL
 // CRIADO POR RANIELLY FERREIRA
 // WWW.RFS.NET.BR 
 // raniellyferreira@icloud.com
-// v 1.6.5
-// ULTIMA MODIFICAÇÃO: 01/04/2013
+// v 1.6.6
+// ULTIMA MODIFICAÇÃO: 06/05/2013
 // More info https://github.com/raniellyferreira/sqlgenerator
 
 --Change History
@@ -551,7 +550,13 @@ class Sqlgen
 		return $this;
 	}
 	
-	public function where($key,$value = NULL,$fetch = 'AND')
+	public function custom_where($where)
+	{
+		$this->where .= "\n".trim($where);
+		return $this;
+	}
+	
+	public function where($key,$value = NULL,$fetch = 'AND',$recursive = FALSE)
 	{
 		if(!is_array($key) and $value === NULL)
 		{
@@ -619,8 +624,15 @@ class Sqlgen
 					}
 				}
 			}
-				
-			$this->where .= $this->_isolate($where);
+			if($recursive === FALSE)
+			{
+				$this->where .= $this->_isolate($where);
+			} else
+			{
+				$this->where = trim($this->where);
+				$this->where .= " ";
+				return $where;
+			}
 		} else
 		{
 			if((bool) !$key)
@@ -629,15 +641,18 @@ class Sqlgen
 				return false;
 			}
 			
+			$wr = NULL;
 			foreach($key as $k => $v)
 			{
-				$this->where($k,$v,$fetch);
+				$wr .= $this->where($k,$v,$fetch,TRUE);
 			}
+			
+			$this->where .= $this->_isolate($wr);
 		}
 		return $this;
 	}
 	
-	public function like($column,$val = NULL,$tags = 'both',$fetch = 'AND',$neg = NULL)
+	public function like($column,$val = NULL,$tags = 'both',$fetch = 'AND',$neg = NULL,$recursive = FALSE)
 	{
 		if(!is_array($column) and (bool) ! $val)
 		{
@@ -683,14 +698,24 @@ class Sqlgen
 				}
 				break;
 			}
-			$this->like .= $this->_isolate("\n".$fetch.$like);
+			if($recursive === FALSE)
+			{
+				$this->like .= $this->_isolate("\n".$fetch.$like);
+			} else
+			{
+				$this->like = trim($this->like);
+				$this->like = " ";
+				return $like;
+			}
 			
 		} else
 		{
+			$lk = NULL;
 			foreach($column as $k => $v)
 			{
-				$this->like($k,$v,$tags,$fetch);
+				$lk = $this->like($k,$v,$tags,$fetch,TRUE);
 			}
+			$this->like .= $this->_isolate($lk);
 		}
 		return $this;
 	}
@@ -1081,4 +1106,3 @@ class Sqlgen
 		if(preg_match("/^([0-9\.])+$/i",$num)) return TRUE; else return FALSE;
 	}
 }
-?>
