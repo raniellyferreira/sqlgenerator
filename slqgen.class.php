@@ -4,8 +4,8 @@
 // CRIADO POR RANIELLY FERREIRA
 // WWW.RFS.NET.BR 
 // raniellyferreira@icloud.com
-// v 1.6.6
-// ULTIMA MODIFICAÇÃO: 06/05/2013
+// v 1.6.7
+// ULTIMA MODIFICAÇÃO: 15/05/2013
 // More info https://github.com/raniellyferreira/sqlgenerator
 
 --Change History
@@ -13,8 +13,8 @@ https://github.com/raniellyferreira/sqlgenerator/wiki/Change-History
 
 --Examples
 https://github.com/raniellyferreira/sqlgenerator/wiki/Examples
-
 */
+
 class Sqlgen
 {
 	public $db_type 	= 'mysql'; 		// mysql only, MSSQL support in future versions.
@@ -558,6 +558,11 @@ class Sqlgen
 	
 	public function where($key,$value = NULL,$fetch = 'AND',$recursive = FALSE)
 	{
+		if((bool) trim($key) AND is_string($key) AND $value === NULL)
+		{
+			return $this->custom_where($key);
+		}
+		
 		if(!is_array($key) and $value === NULL)
 		{
 			$this->set_error("Warning: Wrong parameter in where().");
