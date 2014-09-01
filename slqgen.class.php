@@ -4,8 +4,8 @@
 // CRIADO POR RANIELLY FERREIRA
 // WWW.RFS.NET.BR 
 // raniellyferreira@icloud.com
-// v 1.6.7
-// ULTIMA MODIFICAÇÃO: 15/05/2013
+// v 1.6.8
+// ULTIMA MODIFICAÇÃO: 01/09/2014
 // More info https://github.com/raniellyferreira/sqlgenerator
 
 --Change History
@@ -40,7 +40,7 @@ class Sqlgen
 	
 	function __contruct($array = array())
 	{
-		if((bool) $array)
+		if(!empty($array))
 		{
 			$this->load($array);
 		}
@@ -69,7 +69,7 @@ class Sqlgen
 	
 	public function print_debugger()
 	{
-		if((bool) $this->errors)
+		if(!empty($this->errors))
 		{
 			return $this->_implode($this->errors,'<br />');
 		}
@@ -78,13 +78,13 @@ class Sqlgen
 	
 	public function get($table = NULL,$where = NULL)
 	{
-		if((bool) ! $table and (bool) ! $this->from)
+		if(empty($table) and empty($this->from))
 		{
 			$this->set_error("Warning: Wrong parameter in get().");
 			return false;
 		}
 		
-		if(is_array($where) and (bool) $where)
+		if(is_array($where) and !empty($where))
 		{
 			foreach($where as $k => $v)
 			{
@@ -92,7 +92,7 @@ class Sqlgen
 			}
 		}
 		
-		if((bool) ! $table)
+		if(empty($table))
 		{
 			$table = $this->from;
 		}
@@ -102,7 +102,7 @@ class Sqlgen
 	
 	public function mass_insert($table,$dados = NULL)
 	{
-		if((bool) ! $dados)
+		if(empty($dados))
 		{
 			$this->set_error("Warning: Wrong parameter in mass_insert().");
 			return false;
@@ -132,7 +132,7 @@ class Sqlgen
 	
 	public function insert($table,$dados = NULL)
 	{
-		if((bool) ! $dados)
+		if(empty($dados))
 		{
 			$this->set_error("Warning: Wrong parameter in insert().");
 			return false;
@@ -181,7 +181,7 @@ class Sqlgen
 			return false;
 		}
 		
-		if(is_array($where) and (bool) $where)
+		if(is_array($where) and !empty($where))
 		{
 			foreach($where as $k => $v)
 			{
@@ -227,7 +227,7 @@ class Sqlgen
 	
 	public function delete($table,$where = NULL)
 	{
-		if(is_array($where) and (bool) $where)
+		if(is_array($where) and !empty($where))
 		{
 			foreach($where as $k => $v)
 			{
@@ -260,7 +260,7 @@ class Sqlgen
 		$column = $this->add_crase($column);
 		$comp = strtoupper(trim($comp));
 		
-		if((bool) ! $comp OR $comp != 'NOT')
+		if(empty($comp) OR $comp != 'NOT')
 		{
 			$bet = $column.' BETWEEN \''.$min.'\' AND \''.$max.'\'';
 		} else
@@ -269,7 +269,7 @@ class Sqlgen
 			$bet = $column.' NOT BETWEEN \''.$min.'\' AND \''.$max.'\'';
 		}
 		
-		if((bool) ! $this->between)
+		if(empty($this->between))
 		{
 			$this->between .= $fetch.' '.$this->_isolate($bet,false);
 		} else
@@ -288,7 +288,7 @@ class Sqlgen
 	
 	public function having($col,$valor = NULL,$fetch = 'AND')
 	{
-		if((bool) ! $col AND (bool) ! $valor)
+		if(empty($col) AND empty($valor))
 		{
 			$this->set_error("Warning: Wrong parameter in having().");
 			return FALSE;
@@ -322,7 +322,7 @@ class Sqlgen
 				$having .= $hav." '".$valor."'";
 			}
 			
-			if((bool) ! $this->having)
+			if(empty($this->having))
 			{
 				$this->having = $this->_isolate($having);
 			} else
@@ -344,7 +344,7 @@ class Sqlgen
 	public function join($table,$param,$type = NULL)
 	{
 		//OPTIONS left, right, outer, inner, left outer, and right outer
-		if((bool) $type)
+		if(!empty($type))
 		{
 			$type = strtoupper(trim($type));
 			if(!in_array($type,$this->_explode('LEFT,RIGHT,OUTER,INNER,LEFT OUTER,RIGHT OUTER',',')))
@@ -356,7 +356,7 @@ class Sqlgen
 		
 		$join = NULL;
 		
-		if((bool) ! $type)
+		if(empty($type))
 		{
 			$join .= 'JOIN '.$this->add_crase($table).' ON ';
 		} else
@@ -366,7 +366,7 @@ class Sqlgen
 		
 		$join .= $this->add_crase($param);
 		
-		if((bool) ! $this->join)
+		if(empty($this->join))
 		{
 			$this->join .= $join;
 		} else
@@ -402,7 +402,7 @@ class Sqlgen
 			return $this;
 		}
 		
-		if((bool) $order)
+		if(!empty($order))
 		{
 			$order = strtoupper(trim($order));
 			
@@ -417,7 +417,7 @@ class Sqlgen
 				return false;
 			}
 			$tables = trim($tables);
-			if((bool) ! $this->order)
+			if(empty($this->order))
 			{
 				$this->order .= $this->add_crase($tables).' '.$order;
 				return $this;
@@ -471,7 +471,7 @@ class Sqlgen
 			return $this;
 		}
 		
-		if((bool) ! $this->select)
+		if(empty($this->select))
 		{
 			$this->select = $this->_isolate($this->add_crase($tables),false);
 		} else
@@ -495,7 +495,7 @@ class Sqlgen
 	
 	public function where_in($key,$value = NULL,$fetch = 'AND',$comp = NULL)
 	{
-		if((bool) ! $value)
+		if(empty($value))
 		{
 			$this->set_error("Warning: Wrong parameter in where_in().");
 			return false;
@@ -514,12 +514,12 @@ class Sqlgen
 			return false;
 		}
 		
-		if((bool) $comp) $comp = strtoupper(trim($comp));
+		if(!empty($comp)) $comp = strtoupper(trim($comp));
 		
 		$in = NULL;
 		$in .= $this->add_crase($key);
 		
-		if((bool) ! $comp)
+		if(empty($comp))
 		{
 			$in .= ' IN';
 		} else
@@ -550,9 +550,22 @@ class Sqlgen
 		return $this;
 	}
 	
-	public function custom_where($where)
+	public function custom_where($where,$fetch = 'AND')
 	{
-		$this->where .= "\n".trim($where);
+		$fetch = strtoupper(trim($fetch));
+		if(!in_array($fetch,array('AND','OR')))
+		{
+			$this->set_error("Warning: Wrong parameter in where().");
+			return false;
+		}
+		
+		if(empty($where))
+		{
+			$this->where .= "\n".trim($where);
+		} else
+		{
+			$this->where .= "\n ".$fetch.' '.trim($where);
+		}
 		return $this;
 	}
 	
@@ -560,7 +573,7 @@ class Sqlgen
 	{
 		if((bool) trim($key) AND is_string($key) AND $value === NULL)
 		{
-			return $this->custom_where($key);
+			return $this->custom_where($key,$fetch);
 		}
 		
 		if(!is_array($key) and $value === NULL)
@@ -579,7 +592,7 @@ class Sqlgen
 		if(!is_array($key))
 		{
 			$where = NULL;
-			if((bool) ! $this->where)
+			if(empty($this->where))
 			{
 				if((bool) preg_match_all("/(<|>|=|!)/U",$key,$mt))
 				{
@@ -640,7 +653,7 @@ class Sqlgen
 			}
 		} else
 		{
-			if((bool) !$key)
+			if(empty($key))
 			{
 				$this->set_error("Warning: Wrong parameter in where().");
 				return false;
@@ -659,7 +672,7 @@ class Sqlgen
 	
 	public function like($column,$val = NULL,$tags = 'both',$fetch = 'AND',$neg = NULL,$recursive = FALSE)
 	{
-		if(!is_array($column) and (bool) ! $val)
+		if(!is_array($column) and empty($val))
 		{
 			$this->set_error("Warning: Wrong parameter in like().");
 			return false;
@@ -771,7 +784,7 @@ class Sqlgen
 	
 	private function set_error($error = NULL)
 	{
-		if((bool) $error)
+		if(!empty($error))
 		{
 			$this->errors[] = $error;
 			return $this;
@@ -812,7 +825,7 @@ class Sqlgen
 				}
 			}
 			
-			if((bool) ! $mass)
+			if(empty($mass))
 			{
 				$mass .= '('.$sqlv.')';
 			} else
@@ -838,7 +851,7 @@ class Sqlgen
 			
 			case 'SELECT':
 			{
-				if((bool) ! $this->select)
+				if(empty($this->select))
 				{
 					$sql .= 'SELECT * FROM ('.$this->add_crase($table).')';
 				} else
@@ -873,21 +886,21 @@ class Sqlgen
 			break;
 		}
 		
-		if((bool) $this->join)
+		if(!empty($this->join))
 		{
 			$sql .= "\n".$this->join;
 		}
 		
-		if((bool) $this->where)
+		if(!empty($this->where))
 		{
 			$sql .= "\nWHERE ".$this->where;
 		}
 		
-		if((bool) $this->where_in)
+		if(!empty($this->where_in))
 		{
 
 			$this->where_in = trim($this->where_in);
-			if((bool) ! $this->where)
+			if(empty($this->where))
 			{
 				$sql .= "\nWHERE ".ltrim($this->where_in,'AND,OR, ');
 			} else
@@ -896,10 +909,10 @@ class Sqlgen
 			}
 		}
 		
-		if((bool) $this->like)
+		if(!empty($this->like))
 		{
 			$this->like = trim($this->like);
-			if((bool) ! $this->where and (bool) ! $this->where_in)
+			if(empty($this->where) and empty($this->where_in))
 			{
 				$sql .= "\nWHERE ".ltrim($this->like,'AND,OR, ');
 			} else
@@ -908,10 +921,10 @@ class Sqlgen
 			}
 		}
 		
-		if((bool) $this->between)
+		if(!empty($this->between))
 		{
 			$this->between = trim($this->between);
-			if((bool) ! $this->where and (bool) ! $this->where_in and (bool) ! $this->like)
+			if(empty($this->where) and empty($this->where_in) and empty($this->like))
 			{
 				$sql .= "\nWHERE ".ltrim($this->between,'AND,OR, ');
 			} else
@@ -920,24 +933,26 @@ class Sqlgen
 			}
 		}
 		
-		if((bool) $this->group_by)
+		if(!empty($this->group_by))
 		{
 			$sql .= "\nGROUP BY ".$this->group_by;
 			
-			if((bool) $this->having)
+			if(!empty($this->having))
 			{
 				$sql .= "\nHAVING ".$this->having;
 			}
 		}
 		
-		if((bool) $this->order)
+		if(!empty($this->order))
 		{
 			$sql .= "\nORDER BY ".$this->order;
 		}
-		if((bool) $this->limit)
+		
+		if(!empty($this->limit))
 		{
 			$sql .= "\n".$this->limit;
 		}
+		
 		$this->clean();
 		$this->lasts_sql[] = $sql;
 		$this->last_sql = $sql;
@@ -946,7 +961,7 @@ class Sqlgen
 	
 	private function add_crase($var)
 	{
-		if((bool) !$var)
+		if(empty($var))
 		{
 			return false;
 		}
@@ -1012,7 +1027,7 @@ class Sqlgen
 		{
 		
 			$tbs = $this->_explode($var,',');
-			if((bool) !$tbs)
+			if(empty($tbs))
 			{
 				return false;
 			}
@@ -1028,7 +1043,7 @@ class Sqlgen
 	
 	private function _isolate($var,$add_fetch = true)
 	{
-		if((bool) $this->add_before)
+		if(!empty($this->add_before))
 		{
 			$var = trim($var);
 			if(preg_match("/^(or|and)/iU",$var,$mt) and $add_fetch)
@@ -1042,7 +1057,7 @@ class Sqlgen
 			$this->add_before = NULL;
 		}
 		
-		if((bool) $this->add_after)
+		if(!empty($this->add_after))
 		{
 			$var = $var.$this->add_after;
 			$this->add_after = NULL;
@@ -1079,7 +1094,7 @@ class Sqlgen
 	
 	public function _implode($var,$glue = NULL)
 	{
-		if((bool) !$var OR $glue === NULL)
+		if(empty($var) OR $glue === NULL)
 		{
 			return false;
 		}
@@ -1094,7 +1109,7 @@ class Sqlgen
 	
 	public function _explode($var,$delimiter = NULL)
 	{
-		if((bool) !$var OR $delimiter === NULL)
+		if(empty($var) OR $delimiter === NULL)
 		{
 			return false;
 		}
