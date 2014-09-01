@@ -112,7 +112,7 @@ class Sqlgen
 		$sqlv = NULL;
 		$first = true;
 		
-		foreach($dados[0] as $k => $v)
+		foreach(current($dados) as $k => $v)
 		{
 			if(!$first)
 			{
@@ -803,7 +803,7 @@ class Sqlgen
 			{
 				if(!$first)
 				{
-					if(is_string($v))
+					if(is_string($v) OR empty($v))
 					{
 						$sqlv .= ", '".$v."'";
 					} else
@@ -814,7 +814,7 @@ class Sqlgen
 					
 				} else
 				{
-					if(is_string($v))
+					if(is_string($v) OR empty($v))
 					{
 						$sqlv .= "'".$v."'";
 					} else
@@ -1094,25 +1094,11 @@ class Sqlgen
 	
 	public function _implode($var,$glue = NULL)
 	{
-		if(empty($var) OR $glue === NULL)
-		{
-			return false;
-		}
-		
-		if(!is_array($var))
-		{
-			return $var;
-		}
-		
-		return implode($glue,$var);
+		return implode($glue,(array)$var);
 	}
 	
 	public function _explode($var,$delimiter = NULL)
 	{
-		if(empty($var) OR $delimiter === NULL)
-		{
-			return false;
-		}
 		$var = trim($var,$delimiter);
 		if(strpos($var,$delimiter) == FALSE)
 		{
