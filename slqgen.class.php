@@ -564,7 +564,7 @@ class Sqlgen
 			$this->where .= "\n".trim($where);
 		} else
 		{
-			$this->where .= "\n ".$fetch.' '.trim($where);
+			$this->where .= "\n".$fetch.' '.trim($where);
 		}
 		return $this;
 	}
