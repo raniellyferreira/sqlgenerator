@@ -4,8 +4,8 @@
 // CRIADO POR RANIELLY FERREIRA
 // WWW.RFS.NET.BR 
 // raniellyferreira@icloud.com
-// v 1.6.8
-// ULTIMA MODIFICAÇÃO: 01/09/2014
+// v 1.7.0
+// ULTIMA MODIFICAÇÃO: 03/09/2014
 // More info https://github.com/raniellyferreira/sqlgenerator
 
 --Change History
@@ -17,7 +17,11 @@ https://github.com/raniellyferreira/sqlgenerator/wiki/Examples
 
 class Sqlgen
 {
-	public $db_type 	= 'mysql'; 		// mysql only, MSSQL support in future versions.
+	public $db_type 				= 'mysql';	// mysql only, MSSQL support in future versions.
+	public $escape_string			= TRUE;		// Enable scape string
+	public $connection_identifier	= NULL;		// The connection id to escape string
+	public $delete_hack				= TRUE;		// Filter DELETE FROM hack
+	
 	
 	private $errors 		= array();		//NÃO ALTERAR
 	private $where 			= NULL;			//NÃO ALTERAR
@@ -102,7 +106,7 @@ class Sqlgen
 	
 	public function mass_insert($table,$dados = NULL)
 	{
-		if(empty($dados))
+		if(empty($dados) OR !is_array($dados))
 		{
 			$this->set_error("Warning: Wrong parameter in mass_insert().");
 			return false;
@@ -149,7 +153,7 @@ class Sqlgen
 				$sqlk .= ', `'.$k.'`';
 				if(is_string($v))
 				{
-					$sqlv .= ", '".$v."'";
+					$sqlv .= ", '".$this->_escape_str($v)."'";
 				} else
 				{
 					$sqlv .= ", ".$v;
@@ -160,7 +164,7 @@ class Sqlgen
 				$sqlk .= '`'.$k.'`';
 				if(is_string($v))
 				{
-					$sqlv .= "'".$v."'";
+					$sqlv .= "'".$this->_escape_str($v)."'";
 				} else
 				{
 					$sqlv .= $v;
@@ -181,7 +185,7 @@ class Sqlgen
 			return false;
 		}
 		
-		if(is_array($where) and !empty($where))
+		if(!empty($where) AND is_array($where))
 		{
 			foreach($where as $k => $v)
 			{
@@ -200,7 +204,7 @@ class Sqlgen
 			{
 				if(is_string($v))
 				{
-					$aux = '`'.$k."` = '".$v."'";
+					$aux = '`'.$k."` = '".$this->_escape_str($v)."'";
 				} else
 				{
 					$aux = '`'.$k."` = ".$v;
@@ -319,7 +323,7 @@ class Sqlgen
 				$having .= $hav.$valor;
 			} else
 			{
-				$having .= $hav." '".$valor."'";
+				$having .= $hav." '".$this->_escape_str($valor)."'";
 			}
 			
 			if(empty($this->having))
@@ -538,7 +542,7 @@ class Sqlgen
 		{
 			if(is_string($val))
 			{
-				$vals[] = '\''.$val.'\'';
+				$vals[] = '\''.$this->_escape_str($val).'\'';
 			} else
 			{
 				$vals[] = $val;
@@ -600,7 +604,7 @@ class Sqlgen
 					
 					if(is_string($value))
 					{
-						$where .= $key." '".$value."'";
+						$where .= $key." '".$this->_escape_str($value)."'";
 					} else
 					{
 						$where .= $key." ".$value;
@@ -611,7 +615,7 @@ class Sqlgen
 					
 					if(is_string($value))
 					{
-						$where .= $key." = '".$value."'";
+						$where .= $key." = '".$this->_escape_str($value)."'";
 					} else
 					{
 						$where .= $key." = ".$value;
@@ -624,7 +628,7 @@ class Sqlgen
 					$key = $this->add_crase(trim(str_replace($mt[0],NULL,$key))).' '.$this->_implode($mt[0],'');
 					if(is_string($value))
 					{
-						$where .= "\n".$fetch.' '.$key." '".$value."'";
+						$where .= "\n".$fetch.' '.$key." '".$this->_escape_str($value)."'";
 					} else
 					{
 						$where .= "\n".$fetch.' '.$key." ".$value;
@@ -635,7 +639,7 @@ class Sqlgen
 					
 					if(is_string($value))
 					{
-						$where .= "\n".$fetch.' '.$key." = '".$value."'";
+						$where .= "\n".$fetch.' '.$key." = '".$this->_escape_str($value)."'";
 					} else
 					{
 						$where .= "\n".$fetch.' '.$key." = ".$value;
@@ -692,27 +696,27 @@ class Sqlgen
 			{
 				case 'none':
 				{
-					$like .= ' '.$this->add_crase($column)." LIKE '".$val."'";
+					$like .= ' '.$this->add_crase($column)." LIKE '".$this->_escape_str($val)."'";
 				}
 				break;
 				case 'before':
 				{
-					$like .= ' '.$this->add_crase($column)." LIKE '%".$val."'";
+					$like .= ' '.$this->add_crase($column)." LIKE '%".$this->_escape_str($val)."'";
 				}
 				break;
 				case 'after':
 				{
-					$like .= ' '.$this->add_crase($column)." LIKE '".$val."%'";
+					$like .= ' '.$this->add_crase($column)." LIKE '".$this->_escape_str($val)."%'";
 				}
 				break;
 				case 'both':
 				{
-					$like .= ' '.$this->add_crase($column)." LIKE '%".$val."%'";
+					$like .= ' '.$this->add_crase($column)." LIKE '%".$this->_escape_str($val)."%'";
 				}
 				break;
 				default:
 				{
-					$like .= ' '.$this->add_crase($column)." LIKE '%".$val."%'";
+					$like .= ' '.$this->add_crase($column)." LIKE '%".$this->_escape_str($val)."%'";
 				}
 				break;
 			}
@@ -805,18 +809,17 @@ class Sqlgen
 				{
 					if(is_string($v) OR empty($v))
 					{
-						$sqlv .= ", '".$v."'";
+						$sqlv .= ", '".$this->_escape_str($v)."'";
 					} else
 					{
 						$sqlv .= ", ".$v;
-
 					}
 					
 				} else
 				{
 					if(is_string($v) OR empty($v))
 					{
-						$sqlv .= "'".$v."'";
+						$sqlv .= "'".$this->_escape_str($v)."'";
 					} else
 					{
 						$sqlv .= $v;
@@ -956,7 +959,7 @@ class Sqlgen
 		$this->clean();
 		$this->lasts_sql[] = $sql;
 		$this->last_sql = $sql;
-		return $sql;
+		return $this->_prep_query($sql);
 	}
 	
 	private function add_crase($var)
@@ -1039,6 +1042,60 @@ class Sqlgen
 			}
 			return $this->_implode($sel,',');
 		}
+	}
+	
+	private function _escape_str($str, $like = FALSE)
+	{
+		if($this->escape_string === FALSE)
+		{
+			return $str;
+		}
+		
+		if (is_array($str))
+		{
+			foreach ($str as $key => $val)
+	   		{
+				$str[$key] = $this->_escape_str($val, $like);
+	   		}
+
+	   		return $str;
+	   	}
+
+		if (function_exists('mysql_real_escape_string') AND is_resource($this->connection_identifier))
+		{
+			$str = mysql_real_escape_string($str, $this->connection_identifier);
+		}
+		elseif (function_exists('mysql_escape_string'))
+		{
+			$str = mysql_escape_string($str);
+		}
+		else
+		{
+			$str = addslashes($str);
+		}
+
+		// escape LIKE condition wildcards
+		if ($like === TRUE)
+		{
+			$str = str_replace(array('%', '_'), array('\\%', '\\_'), $str);
+		}
+
+		return $str;
+	}
+	
+	private function _prep_query($sql)
+	{
+		// "DELETE FROM TABLE" returns 0 affected rows This hack modifies
+		// the query so that it returns the number of affected rows
+		if ($this->delete_hack === TRUE)
+		{
+			if (preg_match('/^\s*DELETE\s+FROM\s+(\S+)\s*$/i', $sql))
+			{
+				$sql = preg_replace("/^\s*DELETE\s+FROM\s+(\S+)\s*$/", "DELETE FROM \\1 WHERE 1=1", $sql);
+			}
+		}
+
+		return $sql;
 	}
 	
 	private function _isolate($var,$add_fetch = true)
