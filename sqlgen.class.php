@@ -4,8 +4,8 @@
 // CRIADO POR RANIELLY FERREIRA
 // WWW.RFS.NET.BR 
 // raniellyferreira@icloud.com
-// v 1.7.0
-// ULTIMA MODIFICAÇÃO: 03/09/2014
+// v 1.7.1
+// ULTIMA MODIFICAÇÃO: 10/09/2014
 // More info https://github.com/raniellyferreira/sqlgenerator
 
 --Change History
@@ -456,6 +456,26 @@ class Sqlgen
 	public function distinct()
 	{
 		$this->selectDistinct = TRUE;
+		return $this;
+	}
+	
+	public function custom_select($tables,$keyword = NULL)
+	{
+		$keyword = strtolower(trim($keyword));
+		switch($keyword)
+		{
+			case 'distinct':
+			$this->distinct();
+			break;
+		}
+		
+		if($tables == '*')
+		{
+			$this->select = '*';
+			return $this;
+		}
+		
+		$this->select .= $tables;
 		return $this;
 	}
 	
