@@ -4,8 +4,8 @@
 // CRIADO POR RANIELLY FERREIRA
 // WWW.RFS.NET.BR 
 // raniellyferreira@icloud.com
-// v 1.7.1
-// ULTIMA MODIFICAÇÃO: 10/09/2014
+// v 1.7.2
+// ULTIMA MODIFICAÇÃO: 12/09/2014
 // More info https://github.com/raniellyferreira/sqlgenerator
 
 --Change History
@@ -595,7 +595,7 @@ class Sqlgen
 	
 	public function where($key,$value = NULL,$fetch = 'AND',$recursive = FALSE)
 	{
-		if((bool) trim($key) AND is_string($key) AND $value === NULL)
+		if(!empty($key) AND is_string($key) AND $value === NULL)
 		{
 			return $this->custom_where($key,$fetch);
 		}
@@ -613,7 +613,7 @@ class Sqlgen
 			return false;
 		}
 		
-		if(!is_array($key))
+		if(is_scalar($key))
 		{
 			$where = NULL;
 			if(empty($this->where))
